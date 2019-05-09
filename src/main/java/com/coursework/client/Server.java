@@ -55,9 +55,7 @@ public class Server {
 
                             setDataToTimeManagement(stringBuilder.toString());
                             printToConsole("The schedule transfer completed");
-                            //while (true) {
                             timeManagement();
-                            //}
                         }
                     }
                 } finally {
@@ -92,7 +90,7 @@ public class Server {
 
     private static void timeManagement() {
         if (period == null) {
-            period = (long) (GeneratorService.generate(120, 180) * 100);
+            period = (long) (GeneratorService.generate(120, 180) * 1000);
             try {
                 Thread.sleep(period);
             } catch (InterruptedException e) {
@@ -100,7 +98,7 @@ public class Server {
             }
         }
         if ((currentDate.getTime() + period) < System.currentTimeMillis()) {
-            period = (long) (GeneratorService.generate(120, 180) * 100);
+            period = (long) (GeneratorService.generate(90, 30) * 1000);
             currentDate = new Date();
 
             if (timeManagementService != null) {

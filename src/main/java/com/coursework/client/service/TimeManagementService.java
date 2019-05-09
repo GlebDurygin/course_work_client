@@ -81,8 +81,8 @@ public class TimeManagementService {
     }
 
     private int compareTime(long currentTime, long segmentTime) {
-        if (currentTime <= segmentTime + 15000) {
-            if (currentTime >= segmentTime - 15000) {
+        if (currentTime <= segmentTime + 1000) {
+            if (currentTime >= segmentTime - 1000) {
                 return 0;
             } else {
                 return -1;
