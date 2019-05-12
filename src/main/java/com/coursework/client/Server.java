@@ -1,6 +1,7 @@
 package com.coursework.client;
 
 import com.coursework.client.entity.User;
+import com.coursework.client.service.EncryptionService;
 import com.coursework.client.service.GeneratorService;
 import com.coursework.client.service.JSONService;
 import com.coursework.client.service.TimeManagementService;
@@ -21,6 +22,7 @@ public class Server {
 
     private static JSONService jsonService = JSONService.getInstance();
     private static TimeManagementService timeManagementService = TimeManagementService.getInstance();
+    private static EncryptionService encryptionService = EncryptionService.getInstance();
 
     private static Long period;
     private static Date currentDate;
@@ -55,7 +57,9 @@ public class Server {
 
                             setDataToTimeManagement(stringBuilder.toString());
                             printToConsole("The schedule transfer completed");
-                            timeManagement();
+                            while (true) {
+                                timeManagement();
+                            }
                         }
                     }
                 } finally {

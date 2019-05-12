@@ -7,12 +7,14 @@ import com.coursework.client.entity.User;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 public class TimeManagementService {
     private User user;
     private static TimeManagementService instance;
+    private boolean internet;
 
     private TimeManagementService() {
     }
@@ -38,7 +40,7 @@ public class TimeManagementService {
                 if (timeSpans != null) {
                     int i = 0;
                     TimeSpan timeSpan = timeSpans.get(i);
-                    while (i < timeSpans.size() && currentDate.compareTo(timeSpan.getDate()) > 0) {
+                    while (i < timeSpans.size() && compareDate(currentDate, timeSpan.getDate()) > 0) {
                         if (i + 1 < timeSpans.size()) {
                             timeSpan = timeSpans.get(i + 1);
                         } else {
@@ -54,7 +56,9 @@ public class TimeManagementService {
                             int j = 0;
                             Segment segment = segments.get(j);
                             while (j < segments.size()
-                                    && compareTime(currentDate.getTime(), segment.getStart().getTime()) > 0) {
+                                    && compareTime(currentDate.getTime(),
+                                    segment.getStart().getTime(),
+                                    segment.getEnd().getTime()) > 0) {
                                 if (j + 1 < segments.size()) {
                                     segment = segments.get(j + 1);
                                 } else {
@@ -80,13 +84,29 @@ public class TimeManagementService {
         }
     }
 
-    private int compareTime(long currentTime, long segmentTime) {
-        if (currentTime <= segmentTime + 1000) {
-            if (currentTime >= segmentTime - 1000) {
+    private int compareTime(long currentTime, long segmentTimeStart, long segmentTimeEnd) {
+        if (currentTime >= segmentTimeEnd) {
+            return 1;
+        } else {
+            if (currentTime >= segmentTimeStart - 1000) {
                 return 0;
             } else {
                 return -1;
             }
+        }
+    }
+
+    private int compareDate(Date currentDate, Date timeSpanDate) {
+        Calendar calendarCurrent = Calendar.getInstance();
+        Calendar calendarTimeSpan = Calendar.getInstance();
+        calendarCurrent.setTime(currentDate);
+        calendarTimeSpan.setTime(timeSpanDate);
+        if (calendarCurrent.get(Calendar.DAY_OF_YEAR) == calendarTimeSpan.get(Calendar.DAY_OF_YEAR)
+                && calendarCurrent.get(Calendar.YEAR) == calendarTimeSpan.get(Calendar.YEAR)) {
+            return 0;
+        } else if (calendarCurrent.get(Calendar.DAY_OF_YEAR) < calendarTimeSpan.get(Calendar.DAY_OF_YEAR)
+                || calendarCurrent.get(Calendar.YEAR) < calendarTimeSpan.get(Calendar.YEAR)) {
+            return -1;
         } else {
             return 1;
         }
@@ -94,12 +114,15 @@ public class TimeManagementService {
 
     private void action(Segment segment) {
         try {
-            if (segment == null) {
+            if (segment == null && internet) {
                 Runtime.getRuntime().exec("netsh wlan disconnect");
                 printToConsole("The Internet has disabled");
-            } else {
-                Runtime.getRuntime().exec("netsh wlan connect name=iPhone");
+                internet = false;
+            }
+            if (segment != null && !internet) {
+                Runtime.getRuntime().exec("netsh wlan connect name=WiFi-DOM.ru-3276");
                 printToConsole("The Internet has enabled");
+                internet = true;
             }
         } catch (IOException e) {
             e.printStackTrace();
