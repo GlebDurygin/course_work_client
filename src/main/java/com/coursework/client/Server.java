@@ -20,9 +20,9 @@ public class Server {
     private static BufferedReader reader;
     private static BufferedWriter writer;
 
+    private static EncryptionService encryptionService = EncryptionService.getInstance();
     private static JSONService jsonService = JSONService.getInstance();
     private static TimeManagementService timeManagementService = TimeManagementService.getInstance();
-    private static EncryptionService encryptionService = EncryptionService.getInstance();
 
     private static Long period;
     private static Date currentDate;
@@ -87,6 +87,7 @@ public class Server {
     }
 
     private static void setDataToTimeManagement(String json) {
+        encryptionService.decrypt(json.getBytes());
         User user = jsonService.deserializeUser(json);
         timeManagementService.setUser(user);
         timeManagementService.run();
