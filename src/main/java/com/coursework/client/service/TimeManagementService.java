@@ -124,7 +124,7 @@ public class TimeManagementService {
                 printToConsole("The Internet has disabled");
                 internet = false;
             } else if (!internet) {
-                Runtime.getRuntime().exec("netsh wlan connect name=WiFi-DOM.ru-3276");
+                Runtime.getRuntime().exec("netsh wlan connect name=iPhone");
                 printToConsole("The Internet has enabled");
                 internet = true;
             }
