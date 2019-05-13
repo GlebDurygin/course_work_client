@@ -120,7 +120,7 @@ public class TimeManagementService {
                 internet = false;
             }
             if (segment != null && !internet) {
-                Runtime.getRuntime().exec("netsh wlan connect name=WiFi-DOM.ru-3276");
+                Runtime.getRuntime().exec("netsh wlan connect name=iPhone");
                 printToConsole("The Internet has enabled");
                 internet = true;
             }
