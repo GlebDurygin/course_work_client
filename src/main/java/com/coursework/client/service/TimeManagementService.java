@@ -49,7 +49,8 @@ public class TimeManagementService {
                         i++;
                     }
 
-                    if (timeSpan != null) {
+                    if (timeSpan != null
+                            && compareDate(currentDate, timeSpan.getDate()) == 0) {
                         List<Segment> segments = timeSpan.getSegments();
 
                         if (segments != null) {
@@ -72,12 +73,16 @@ public class TimeManagementService {
                             } else {
                                 action(null);
                             }
+                        } else {
+                            action(null);
                         }
                     } else {
                         action(null);
-                        TimeSpan oldTimeSpan = timeSpans.get(timeSpans.size() - 1);
-                        oldTimeSpan.setDate(new Date(oldTimeSpan.getDate().getTime() + 1000 * 60 * 60 * 24));
-                        user.getSchedule().getTimeSpans().add(oldTimeSpan);
+                        if (timeSpan == null) {
+                            TimeSpan oldTimeSpan = timeSpans.get(timeSpans.size() - 1);
+                            oldTimeSpan.setDate(new Date(oldTimeSpan.getDate().getTime() + 1000 * 60 * 60 * 24));
+                            user.getSchedule().getTimeSpans().add(oldTimeSpan);
+                        }
                     }
                 }
             }
@@ -114,13 +119,12 @@ public class TimeManagementService {
 
     private void action(Segment segment) {
         try {
-            if (segment == null && internet) {
+            if (segment == null) {
                 Runtime.getRuntime().exec("netsh wlan disconnect");
                 printToConsole("The Internet has disabled");
                 internet = false;
-            }
-            if (segment != null && !internet) {
-                Runtime.getRuntime().exec("netsh wlan connect name=iPhone");
+            } else if (!internet) {
+                Runtime.getRuntime().exec("netsh wlan connect name=WiFi-DOM.ru-3276");
                 printToConsole("The Internet has enabled");
                 internet = true;
             }
