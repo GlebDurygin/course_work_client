@@ -6,10 +6,13 @@ import com.coursework.client.entity.TimeSpan;
 import com.coursework.client.entity.User;
 
 import java.io.IOException;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TimeManagementService {
     private User user;
@@ -27,7 +30,25 @@ public class TimeManagementService {
     }
 
     public void setUser(User user) {
-        this.user = user;
+        this.user = sortUserByTime(user);
+    }
+
+    private User sortUserByTime(User user) {
+        List<TimeSpan> sortTimeSpans = user.getSchedule()
+                .getTimeSpans()
+                .stream()
+                .sorted(Comparator.comparing(TimeSpan::getDate))
+                .collect(Collectors.toList());
+
+        for (TimeSpan timeSpan : sortTimeSpans) {
+            timeSpan.setSegments(timeSpan.getSegments()
+                    .stream()
+                    .sorted(Comparator.comparing(Segment::getStart))
+                    .collect(Collectors.toList()));
+        }
+
+        user.getSchedule().setTimeSpans(sortTimeSpans);
+        return user;
     }
 
     public void run() {
@@ -57,9 +78,9 @@ public class TimeManagementService {
                             int j = 0;
                             Segment segment = segments.get(j);
                             while (j < segments.size()
-                                    && compareTime(currentDate.getTime(),
-                                    segment.getStart().getTime(),
-                                    segment.getEnd().getTime()) > 0) {
+                                    && compareTime(currentDate,
+                                    segment.getStart(),
+                                    segment.getEnd()) > 0) {
                                 if (j + 1 < segments.size()) {
                                     segment = segments.get(j + 1);
                                 } else {
@@ -89,14 +110,28 @@ public class TimeManagementService {
         }
     }
 
-    private int compareTime(long currentTime, long segmentTimeStart, long segmentTimeEnd) {
-        if (currentTime >= segmentTimeEnd) {
+    private int compareTime(Date currentTime, Time segmentTimeStart, Time segmentTimeEnd) {
+        Calendar calendarCurrent = Calendar.getInstance();
+        Calendar calendarTimeSpanStart = Calendar.getInstance();
+        Calendar calendarTimeSpan = Calendar.getInstance();
+        calendarCurrent.setTime(currentTime);
+        calendarTimeSpanStart.setTime(segmentTimeStart);
+        calendarTimeSpan.setTime(segmentTimeEnd);
+        if (calendarCurrent.get(Calendar.HOUR_OF_DAY) > calendarTimeSpan.get(Calendar.HOUR_OF_DAY)) {
             return 1;
         } else {
-            if (currentTime >= segmentTimeStart - 1000) {
-                return 0;
-            } else {
+            if (calendarCurrent.get(Calendar.HOUR_OF_DAY) < calendarTimeSpan.get(Calendar.HOUR_OF_DAY)) {
                 return -1;
+            } else {
+                if (calendarCurrent.get(Calendar.MINUTE) <= calendarTimeSpan.get(Calendar.MINUTE)) {
+                    if (calendarCurrent.get(Calendar.MINUTE) >= calendarTimeSpanStart.get(Calendar.MINUTE)) {
+                        return 0;
+                    } else {
+                        return -1;
+                    }
+                } else {
+                    return 1;
+                }
             }
         }
     }

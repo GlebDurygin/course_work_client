@@ -38,7 +38,7 @@ public class EncryptionService {
             return cipher.doFinal(message);
 
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
-            e.printStackTrace();
+            e.getMessage();
         }
         return null;
     }
