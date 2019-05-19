@@ -37,7 +37,8 @@ public class EncryptionService {
             cipher.init(mode, this.secretKey);
             return cipher.doFinal(message);
 
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException
+                | IllegalBlockSizeException | BadPaddingException e) {
             e.getMessage();
         }
         return null;
