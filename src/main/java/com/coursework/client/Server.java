@@ -95,7 +95,7 @@ public class Server {
 
     private static void timeManagement() {
         if (period == null) {
-            period = (long) (GeneratorService.generate(120, 180) * 10);
+            period = (long) (GeneratorService.generate(5, 10) * 1000);
             try {
                 Thread.sleep(period);
             } catch (InterruptedException e) {
@@ -103,7 +103,7 @@ public class Server {
             }
         }
         if ((currentDate.getTime() + period) < System.currentTimeMillis()) {
-            period = (long) (GeneratorService.generate(90, 30) * 10);
+            period = (long) (GeneratorService.generate(5, 10) * 1000);
             currentDate = new Date();
 
             if (timeManagementService != null) {
