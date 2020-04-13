@@ -89,7 +89,7 @@ public class TimeManagementService {
                                 j++;
                             }
 
-                            if (segment != null) {
+                            if (segment != null && compareTime(currentDate, segment.getStart(), segment.getEnd()) == 0) {
                                 action(segment);
                             } else {
                                 action(null);
@@ -110,30 +110,24 @@ public class TimeManagementService {
         }
     }
 
-    private int compareTime(Date currentTime, Time segmentTimeStart, Time segmentTimeEnd) {
+    private int compareTime(Date currentDateTime, Time segmentTimeStart, Time segmentTimeEnd) {
         Calendar calendarCurrent = Calendar.getInstance();
+        calendarCurrent.setTime(currentDateTime);
+
         Calendar calendarTimeSpanStart = Calendar.getInstance();
-        Calendar calendarTimeSpan = Calendar.getInstance();
-        calendarCurrent.setTime(currentTime);
         calendarTimeSpanStart.setTime(segmentTimeStart);
-        calendarTimeSpan.setTime(segmentTimeEnd);
-        if (calendarCurrent.get(Calendar.HOUR_OF_DAY) > calendarTimeSpan.get(Calendar.HOUR_OF_DAY)) {
-            return 1;
-        } else {
-            if (calendarCurrent.get(Calendar.HOUR_OF_DAY) < calendarTimeSpan.get(Calendar.HOUR_OF_DAY)) {
-                return -1;
-            } else {
-                if (calendarCurrent.get(Calendar.MINUTE) <= calendarTimeSpan.get(Calendar.MINUTE)) {
-                    if (calendarCurrent.get(Calendar.MINUTE) >= calendarTimeSpanStart.get(Calendar.MINUTE)) {
-                        return 0;
-                    } else {
-                        return -1;
-                    }
-                } else {
-                    return 1;
-                }
-            }
-        }
+
+        calendarCurrent.set(Calendar.YEAR, calendarTimeSpanStart.get(Calendar.YEAR));
+        calendarCurrent.set(Calendar.MONTH, calendarTimeSpanStart.get(Calendar.MONTH));
+        calendarCurrent.set(Calendar.DAY_OF_MONTH, calendarTimeSpanStart.get(Calendar.DAY_OF_MONTH));
+
+        Time currentTime = new Time(calendarCurrent.getTime().getTime());
+        return currentTime.compareTo(segmentTimeStart) > -1
+                && currentTime.compareTo(segmentTimeEnd) < 1
+                ? 0
+                : currentTime.compareTo(segmentTimeStart) < 0
+                ? -1
+                : 1;
     }
 
     private int compareDate(Date currentDate, Date timeSpanDate) {
