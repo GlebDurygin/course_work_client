@@ -24,7 +24,8 @@ public class JSONService {
             String jsonUser = json.substring(2, json.length() - 1).replaceAll(" ", "");
             return objectMapper.readValue(jsonUser, User.class);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Ошибка при десериализации расписания. Ошибка на сервере.");
+            System.out.println("Сделайте расписание еще раз");
         }
         return null;
     }

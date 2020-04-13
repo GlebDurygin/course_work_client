@@ -164,7 +164,8 @@ public class TimeManagementService {
                 internet = true;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Не удалось подключить/отключить доступ к сети Интренет. Ошибка на клиенте.");
+            System.out.println("Увеличьте права доступа и повторите еще раз.");
         }
     }
 
